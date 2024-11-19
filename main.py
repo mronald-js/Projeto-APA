@@ -1,13 +1,53 @@
-import customtkinter
+import customtkinter as ctk
 
-# Os códigos a seguir exemplificam a criação de um botão com a biblioteca customtkinter
-def button_callback():
-    print("button clicked")
+# Configuração principal da aplicação
+app = ctk.CTk()
+app.geometry("500x400")  # Dimensão da janela
+app.title("Timetable - APA")
 
-app = customtkinter.CTk()
-app.geometry("400x150")
+# Definir cores (fundo e botões)
+app.configure(bg="black")
 
-button = customtkinter.CTkButton(app, text="my button", command=button_callback)
-button.pack(padx=20, pady=20)
+# Título
+title_label = ctk.CTkLabel(
+    app, 
+    text="TIMETABLE - APA", 
+    font=("Arial", 20, "bold"), 
+    text_color="white"
+)
+title_label.pack(pady=20)  # Espaçamento superior
 
+title_label = ctk.CTkLabel(
+    app, 
+    text="Selecione o seu perfil", 
+    font=("Arial", 15), 
+    text_color="white"
+)
+title_label.pack(pady=10)  # Espaçamento superior
+
+# Botão Estudante
+student_button = ctk.CTkButton(
+    app, 
+    text="Estudante", 
+    width=200, 
+    height=50, 
+    fg_color="gray",  # Cor do botão
+    text_color="white",  # Cor do texto
+    corner_radius=8  # Arredondamento
+)
+student_button.pack(pady=10)  # Espaçamento entre elementos
+
+# Botão Administrador
+admin_button = ctk.CTkButton(
+    app, 
+    text="Administrador", 
+    width=200, 
+    height=50, 
+    fg_color="gray", 
+    text_color="white", 
+    corner_radius=8
+)
+admin_button.pack(pady=10)
+
+# Iniciar a aplicação
 app.mainloop()
