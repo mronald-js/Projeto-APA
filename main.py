@@ -1,53 +1,61 @@
 import customtkinter as ctk
+import sqlite3
+from database import connect_db  # Importa a função do script de banco de dados
+
+def create_user():
+    """Função para criar um usuário no banco de dados."""
+    username = username_entry.get()
+    password = password_entry.get()
+    profile_type = profile_combobox.get()
+
+    if not username or not password or not profile_type:
+        status_label.configure(text="Preencha todos os campos!", text_color="red")
+        return
+
+    conn = connect_db()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "INSERT INTO users (username, password, profile_type) VALUES (?, ?, ?)",
+            (username, password, profile_type)
+        )
+        conn.commit()
+        status_label.configure(text="Usuário criado com sucesso!", text_color="green")
+    except sqlite3.IntegrityError:
+        status_label.configure(text="Erro: Nome de usuário já existe.", text_color="red")
+    finally:
+        conn.close()
 
 # Configuração principal da aplicação
 app = ctk.CTk()
-app.geometry("500x400")  # Dimensão da janela
-app.title("Timetable - APA")
+app.geometry("400x350")
+app.title("Cadastro de Usuário")
 
-# Definir cores (fundo e botões)
-app.configure(bg="black")
+# Campo para nome de usuário
+ctk.CTkLabel(app, text="Nome de Usuário:").pack(pady=(10, 0))
+username_entry = ctk.CTkEntry(app, width=300)
+username_entry.pack(pady=5)
 
-# Título
-title_label = ctk.CTkLabel(
-    app, 
-    text="TIMETABLE - APA", 
-    font=("Arial", 20, "bold"), 
-    text_color="white"
+# Campo para senha
+ctk.CTkLabel(app, text="Senha:").pack(pady=(10, 0))
+password_entry = ctk.CTkEntry(app, width=300, show="*")
+password_entry.pack(pady=5)
+
+# Dropdown (Combobox) para selecionar o tipo de usuário
+ctk.CTkLabel(app, text="Tipo de Perfil:").pack(pady=(10, 0))
+profile_combobox = ctk.CTkComboBox(
+    app, values=["admin", "student"], width=300
 )
-title_label.pack(pady=20)  # Espaçamento superior
+profile_combobox.set("Selecione...")  # Texto padrão
+profile_combobox.pack(pady=5)
 
-title_label = ctk.CTkLabel(
-    app, 
-    text="Selecione o seu perfil", 
-    font=("Arial", 15), 
-    text_color="white"
-)
-title_label.pack(pady=10)  # Espaçamento superior
+# Botão para criar o usuário
+create_button = ctk.CTkButton(app, text="Criar Usuário", command=create_user)
+create_button.pack(pady=20)
 
-# Botão Estudante
-student_button = ctk.CTkButton(
-    app, 
-    text="Estudante", 
-    width=200, 
-    height=50, 
-    fg_color="gray",  # Cor do botão
-    text_color="white",  # Cor do texto
-    corner_radius=8  # Arredondamento
-)
-student_button.pack(pady=10)  # Espaçamento entre elementos
-
-# Botão Administrador
-admin_button = ctk.CTkButton(
-    app, 
-    text="Administrador", 
-    width=200, 
-    height=50, 
-    fg_color="gray", 
-    text_color="white", 
-    corner_radius=8
-)
-admin_button.pack(pady=10)
+# Label para exibir mensagens de status
+status_label = ctk.CTkLabel(app, text="")
+status_label.pack()
 
 # Iniciar a aplicação
 app.mainloop()
