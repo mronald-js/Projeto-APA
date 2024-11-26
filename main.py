@@ -5,7 +5,6 @@ import utility.center as center
 import cursos.cursos as cursos
 
 
-
 def create_user():
     """Função para criar um usuário no banco de dados."""
     username = username_entry.get()
@@ -50,8 +49,8 @@ def login():
 
     if user:
         status_label.configure(text="Login realizado com sucesso!", text_color="green")
-        cursos.main()
         app.destroy()
+        cursos.main()
     else:
         status_label.configure(text="Usuário ou senha incorretos.", text_color="red")
 
