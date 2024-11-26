@@ -1,6 +1,10 @@
 import customtkinter as ctk
 import sqlite3
 from database import connect_db  # Importa a função do script de banco de dados
+import utility.center as center
+import cursos.cursos as cursos
+
+
 
 def create_user():
     """Função para criar um usuário no banco de dados."""
@@ -22,13 +26,40 @@ def create_user():
         conn.commit()
         status_label.configure(text="Usuário criado com sucesso!", text_color="green")
     except sqlite3.IntegrityError:
-        status_label.configure(text="Erro: Nome de usuário já existe.", text_color="red")
+        status_label.configure(text="Erro: Usuário já existe.", text_color="red")
     finally:
         conn.close()
 
+def login():
+    """Função para realizar o login de um usuário."""
+    username = username_entry.get()
+    password = password_entry.get()
+
+    if not username or not password:
+        status_label.configure(text="Preencha todos os campos!", text_color="red")
+        return
+
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT * FROM users WHERE username = ? AND password = ?",
+        (username, password)
+    )
+    user = cursor.fetchone()
+    conn.close()
+
+    if user:
+        status_label.configure(text="Login realizado com sucesso!", text_color="green")
+        cursos.main()
+        app.destroy()
+    else:
+        status_label.configure(text="Usuário ou senha incorretos.", text_color="red")
+
 # Configuração principal da aplicação
 app = ctk.CTk()
-app.geometry("400x350")
+# Tamanho da janela e posicionamento no centro da tela
+app.geometry(center.CenterWindowToDisplay(app, 400, 350))
+# abrir posição da janela no centro da tela
 app.title("Cadastro de Usuário")
 
 # Campo para nome de usuário
@@ -52,6 +83,10 @@ profile_combobox.pack(pady=5)
 # Botão para criar o usuário
 create_button = ctk.CTkButton(app, text="Criar Usuário", command=create_user)
 create_button.pack(pady=20)
+
+# Botão para logar
+login_button = ctk.CTkButton(app, text="Logar", command=login)
+login_button.pack(pady=5)
 
 # Label para exibir mensagens de status
 status_label = ctk.CTkLabel(app, text="")

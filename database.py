@@ -2,6 +2,7 @@ import sqlite3
 
 def connect_db():
     """Estabelece a conexão com o banco de dados e cria a tabela, se não existir."""
+
     conn = sqlite3.connect("./banco/timetable.db")
     cursor = conn.cursor()
     
