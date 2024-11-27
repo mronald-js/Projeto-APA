@@ -4,6 +4,15 @@ from database import connect_db  # Importa a função do script de banco de dado
 import utility.center as center
 import cursos.cursos as cursos
 
+def show():
+    hide_button = ctk.CTkButton(app, command=hide, width=60, text="Esconder")
+    hide_button.place(x=303, y=120)
+    password_entry.configure(show="")
+    
+def hide():
+    show_button = ctk.CTkButton(app, command=show, width=67, text="Mostrar")
+    show_button.place(x=303, y=120)
+    password_entry.configure(show="*")
 
 def create_user():
     """Função para criar um usuário no banco de dados."""
@@ -33,6 +42,7 @@ def login():
     """Função para realizar o login de um usuário."""
     username = username_entry.get()
     password = password_entry.get()
+    profile_type = profile_combobox.get()
 
     if not username or not password:
         status_label.configure(text="Preencha todos os campos!", text_color="red")
@@ -50,7 +60,11 @@ def login():
     if user:
         status_label.configure(text="Login realizado com sucesso!", text_color="green")
         app.destroy()
-        cursos.main()
+        if(profile_type == 'admin'):
+            import admin.admin
+            app.quit();
+        elif(profile_type != 'admin'):
+            cursos.main()
     else:
         status_label.configure(text="Usuário ou senha incorretos.", text_color="red")
 
@@ -70,6 +84,9 @@ username_entry.pack(pady=5)
 ctk.CTkLabel(app, text="Senha:").pack(pady=(10, 0))
 password_entry = ctk.CTkEntry(app, width=300, show="*")
 password_entry.pack(pady=5)
+
+show_button = ctk.CTkButton(app, command=show, width=60, text="Mostrar")
+show_button.place(x=305, y=120)
 
 # Dropdown (Combobox) para selecionar o tipo de usuário
 ctk.CTkLabel(app, text="Tipo de Perfil:").pack(pady=(10, 0))
