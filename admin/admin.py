@@ -4,8 +4,6 @@ import tkinter
 from banco.database import connect_db
 import utility.center as center
 
-
-
 class AdminPanel(ctk.CTk):
     def __init__(self):
         super().__init__()

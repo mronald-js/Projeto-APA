@@ -67,13 +67,95 @@ class materiasControle(ctk.CTk):
         )
     
     def add_subject(self):
-        pass # Implementar
+        # Vai abrir uma nova janela para adicionar uma matéria, com basicamente 4 campos: ID, Nome, Carga horária e Id do curso vinculado
+        add_subject_window = ctk.CTk()
+        add_subject_window.geometry(center.CenterWindowToDisplay(add_subject_window, 400, 400))
+        add_subject_window.title("Adicionar Matéria")
+        ctk.CTkLabel(add_subject_window, text="Adicionar Matéria", font=("Arial Bold", 24)).pack(pady=20)
+        ctk.CTkLabel(add_subject_window, text="ID:").pack(pady=5)
+        id_entry = ctk.CTkEntry(add_subject_window)
+        id_entry.pack(pady=5)
+        ctk.CTkLabel(add_subject_window, text="Nome:").pack(pady=5)
+        name_entry = ctk.CTkEntry(add_subject_window)
+        name_entry.pack(pady=5)
+        ctk.CTkLabel(add_subject_window, text="Carga Horária:").pack(pady=5)
+        cargaHoraria_entry = ctk.CTkEntry(add_subject_window)
+        cargaHoraria_entry.pack(pady=5)
+
+        ctk.CTkLabel(add_subject_window, text="ID do Curso:").pack(pady=5)
+        idCurso_entry = ctk.CTkEntry(add_subject_window)
+        idCurso_entry.pack(pady=5)
+        ctk.CTkButton(add_subject_window, text="Adicionar", command=lambda: self.add_subject_to_db(
+            id_entry.get(), name_entry.get(), cargaHoraria_entry.get(), idCurso_entry.get()
+        )).pack(pady=5)
+
+        add_subject_window.mainloop()
     
     def remove_subject(self):
-        pass
+        # Vai abrir uma nova janela para remover uma matéria, com basicamente 1 campo: ID
+        remove_subject_window = ctk.CTk()
+        remove_subject_window.geometry(center.CenterWindowToDisplay(remove_subject_window, 400, 400))
+        remove_subject_window.title("Remover Matéria")
+        ctk.CTkLabel(remove_subject_window, text="Remover Matéria", font=("Arial Bold", 24)).pack(pady=20)
+        ctk.CTkLabel(remove_subject_window, text="ID:").pack(pady=5)
+        id_entry = ctk.CTkEntry(remove_subject_window)
+        id_entry.pack(pady=5)
+        ctk.CTkButton(remove_subject_window, text="Remover", command=lambda: self.remove_subject_from_db(
+            id_entry.get()
+        )).pack(pady=5)            
+
+        remove_subject_window.mainloop()
 
     def update_subject(self):
-        pass
+        # Vai abrir uma nova janela para atualizar uma matéria, com basicamente 4 campos: ID, Nome, Carga horária e Id do curso vinculado
+        update_subject_window = ctk.CTk()
+        update_subject_window.geometry(center.CenterWindowToDisplay(update_subject_window, 400, 400))
+        update_subject_window.title("Atualizar Matéria")
+        ctk.CTkLabel(update_subject_window, text="Atualizar Matéria", font=("Arial Bold", 24)).pack(pady=20)
+        ctk.CTkLabel(update_subject_window, text="ID:").pack(pady=5)
+        id_entry = ctk.CTkEntry(update_subject_window)
+        id_entry.pack(pady=5)
+        ctk.CTkLabel(update_subject_window, text="Nome:").pack(pady=5)
+        name_entry = ctk.CTkEntry(update_subject_window)
+        name_entry.pack(pady=5)
+        ctk.CTkLabel(update_subject_window, text="Carga Horária:").pack(pady=5)
+        cargaHoraria_entry = ctk.CTkEntry(update_subject_window)
+        cargaHoraria_entry.pack(pady=5)
+        ctk.CTkLabel(update_subject_window, text="ID do Curso:").pack(pady=5)
+        idCurso_entry = ctk.CTkEntry(update_subject_window)
+        idCurso_entry.pack(pady=5)
+        ctk.CTkButton(update_subject_window, text="Atualizar", command=lambda: self.update_subject_from_db(
+            id_entry.get(), name_entry.get(), cargaHoraria_entry.get(), idCurso_entry.get()
+        )).pack(pady=5)
+
+        update_subject_window.mainloop()
+
+    def add_subject_to_db(self, id, name, cargaHoraria, idCurso):
+        conn = connect_db()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO subjects (materia_id, materia_name, materia_cargaHoraria, materia_curso) VALUES (?, ?, ?, ?)", (id, name, cargaHoraria, idCurso))
+        conn.commit()
+        conn.close()
+        self.destroy()
+        materiasControle().mainloop()
+    
+    def remove_subject_from_db(self, id):
+        conn = connect_db()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM subjects WHERE materia_id=?", (id,))
+        conn.commit()
+        conn.close()
+        self.destroy()
+        materiasControle().mainloop()
+    
+    def update_subject_from_db(self, id, name, cargaHoraria, idCurso):
+        conn = connect_db()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE subjects SET materia_name=?, materia_cargaHoraria=?, materia_curso=? WHERE materia_id=?", (name, cargaHoraria, idCurso, id))
+        conn.commit()
+        conn.close()
+        self.destroy()
+        materiasControle().mainloop()
 
     def create_button_containerOut(self):
         """Cria o container para botões de ação."""

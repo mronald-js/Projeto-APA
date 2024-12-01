@@ -20,13 +20,14 @@ def connect_db():
             )
         """)
 
-
         # Criação da tabela de semestres, se não existir
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS semesters (
                 semestre_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 semestre_year INTEGER NOT NULL,
-                semsetre_startOrEnd BOOLEAN NOT NULL
+                semsetre_startOrEnd BOOLEAN NOT NULL,
+                semestre_faculdade INTEGER NOT NULL,
+                FOREIGN KEY (semestre_faculdade) REFERENCES colleges(faculdade_id)
             )
         """)
 
@@ -34,9 +35,26 @@ def connect_db():
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS colleges (
                 faculdade_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                faculdade_name TEXT NOT NULL UNIQUE,
-                faculdade_semesters INTEGER NOT NULL,
-                FOREIGN KEY (faculdade_semesters) REFERENCES semesters(semestre_id)
+                faculdade_name TEXT NOT NULL UNIQUE
+            )
+        """)
+
+        # Criação da tabela de cursos, se não existir
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS courses (
+                curso_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                curso_name TEXT NOT NULL UNIQUE,
+                curso_cargaHoraria INTEGER NOT NULL,
+                curso_faculdade INTEGER NOT NULL,
+                FOREIGN KEY (curso_faculdade) REFERENCES colleges(faculdade_id)
+            )
+        """)
+
+        # Criação da tabela de dias da semana, se não existir
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS days (
+                dia_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                dia_name TEXT NOT NULL UNIQUE
             )
         """)
 
@@ -46,7 +64,8 @@ def connect_db():
                 materia_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 materia_name TEXT NOT NULL UNIQUE,
                 materia_cargaHoraria INTEGER NOT NULL,
-                FOREIGN KEY (materia_id) REFERENCES colleges(faculdade_id)
+                materia_curso INTEGER NOT NULL,
+                FOREIGN KEY (materia_curso) REFERENCES courses(curso_id)
             )
         """)
 

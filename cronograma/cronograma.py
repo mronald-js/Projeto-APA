@@ -1,6 +1,11 @@
 import customtkinter as ctk
 import utility.center as center
+from banco.database import connect_db
 
+class schedule:
+    def __init__(self, nome, horario):
+        self.nome = nome
+        self.horario = horario
 
 class Cronograma(ctk.CTk):
 
@@ -20,26 +25,56 @@ class Cronograma(ctk.CTk):
         table_frame = ctk.CTkFrame(self)
         table_frame.pack(pady=10, padx=20, fill="both", expand=True)
 
-        # Cabeçalhos da tabela
-        headers = ["SEG", "TER", "QUA", "QUI", "SEX"]
+        conn = connect_db()
+        cursor = conn.cursor()
+
+        # # Cabeçalhos da tabela
+        # headers = ["SEG", "TER", "QUA", "QUI", "SEX"]
+        # for col, header in enumerate(headers):
+        #     ctk.CTkLabel(
+        #         master=table_frame, text=header, font=("Arial Bold", 16), anchor="center"
+        #     ).grid(row=0, column=col, padx=5, pady=5, sticky="nsew")
+
+        # Cabeçalhos da tabela a partir do banco de dados
+        cursor.execute("SELECT * FROM days")
+        days = cursor.fetchall()
+        headers = []
+        for day in days:
+            headers.append(day[1])
         for col, header in enumerate(headers):
             ctk.CTkLabel(
                 master=table_frame, text=header, font=("Arial Bold", 16), anchor="center"
             ).grid(row=0, column=col, padx=5, pady=5, sticky="nsew")
 
-        # Conteúdo do cronograma
-        schedule = [
-            ["Introdução à Programação\nSilva\n08:00-10:00\nCOMP101", "", 
-            "Estruturas de Dados\nOliveira\n08:00-10:00\nCOMP201", "", 
-            "Engenharia de Software\nSantos\n09:00-11:30\nCOMP301"],
-            ["", "Banco de Dados\nPereira\n14:00-16:00\nCOMP302", 
-            "", "Redes de Computadores\nFernandes\n16:30-18:30\nCOMP401", 
-            "Banco de Dados\nPereira\n14:00-16:00\nCOMP302"],
-            ["", "Algoritmos e Complexidade\nCosta\n10:00-12:00\nCOMP202", 
-            "", "", ""],
-        ]
+        cursor.execute("SELECT * FROM subjects")
+        subjects = cursor.fetchall()
 
-        # Criando células da tabela
+        schedule = []
+        #se não estiver vazio
+        if subjects:
+            for subject in subjects:
+                print(subject)
+                schedule.append([f"{subject[1]}\n{subject[2]}", "", "", "", ""])
+        else:
+            schedule = [
+                ["", "", "", "", ""],
+                ["", "", "", "", ""],
+                ["", "", "", "", ""],
+            ]
+
+        # Conteúdo do cronograma
+        # schedule = [
+        #     ["Introdução à Programação\n08:00-10:00", "", 
+        #     "Estruturas de Dados\n08:00-10:00", "", 
+        #     "Engenharia de Software\n09:00-11:30"],
+        #     ["", "Banco de Dados\n14:00-16:00", 
+        #     "", "Redes de Computadores\n16:30-18:30", 
+        #     "Banco de Dados\n14:00-16:00"],
+        #     ["", "Algoritmos e Complexidade\n10:00-12:00", 
+        #     "", "", ""],
+        # ]
+
+        # Criando células da tabela a partir do schedule e separando em conjunto com os dias
         for row, day_schedule in enumerate(schedule, start=1):
             for col, content in enumerate(day_schedule):
                 cell = ctk.CTkLabel(

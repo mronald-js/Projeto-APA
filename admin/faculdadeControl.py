@@ -75,14 +75,69 @@ class FaculdadeControle(ctk.CTk):
         ).pack(pady=20, padx=10, side="left")
 
     def add_college(self):
-        pass
+        add_college_window = ctk.CTk()
+        add_college_window.geometry(center.CenterWindowToDisplay(add_college_window, 400, 300))
+        add_college_window.title("Adicionar Faculdade")
+        #Id da faculdade
+        ctk.CTkLabel(add_college_window, text="ID da Faculdade", font=("Arial", 12)).pack(pady=10)
+        college_id = ctk.CTkEntry(add_college_window)
+        college_id.pack(pady=10)
+        ctk.CTkLabel(add_college_window, text="Nome da Faculdade", font=("Arial", 12)).pack(pady=10)
+        college_name = ctk.CTkEntry(add_college_window)
+        college_name.pack(pady=10)
+        ctk.CTkButton(add_college_window, text="Adicionar", command=lambda: self.add_college_db(add_college_window, college_name, college_id)).pack(pady=10)
+        add_college_window.mainloop()
 
+    def add_college_db(self, add_college_window, college_name, college_id):
+        conn = connect_db()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO colleges (faculdade_id, faculdade_name) VALUES (?, ?)", (college_id.get(), college_name.get()))
+        conn.commit()
+        conn.close()
+        add_college_window.destroy()
+        FaculdadeControle()
+    
     def remove_college(self):
-        pass
+        remove_college_window = ctk.CTk()
+        remove_college_window.geometry(center.CenterWindowToDisplay(remove_college_window, 400, 300))
+        remove_college_window.title("Remover Faculdade")
+        ctk.CTkLabel(remove_college_window, text="ID da Faculdade", font=("Arial", 12)).pack(pady=10)
+        college_id = ctk.CTkEntry(remove_college_window)
+        college_id.pack(pady=10)
+        ctk.CTkButton(remove_college_window, text="Remover", command=lambda: self.remove_college_db(remove_college_window, college_id)).pack(pady=10)
+        remove_college_window.mainloop()
+    
+    def remove_college_db(self, remove_college_window, college_id):
+        conn = connect_db()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM colleges WHERE faculade_id=?", (college_id.get(),))
+        conn.commit()
+        conn.close()
+        remove_college_window.destroy()
+        FaculdadeControle()
 
     def update_college(self):
-        pass
-    
+        update_college_window = ctk.CTk()
+        update_college_window.geometry(center.CenterWindowToDisplay(update_college_window, 400, 300))
+        update_college_window.title("Atualizar Faculdade")
+        ctk.CTkLabel(update_college_window, text="ID da Faculdade", font=("Arial", 12)).pack(pady=10)
+        college_id = ctk.CTkEntry(update_college_window)
+        college_id.pack(pady=10)
+        ctk.CTkLabel(update_college_window, text="Nome da Faculdade", font=("Arial", 12)).pack(pady=10)
+        college_name = ctk.CTkEntry(update_college_window)
+        college_name.pack(pady=10)
+        ctk.CTkButton(update_college_window, text="Atualizar", command=lambda: self.update_college_db(update_college_window, college_name, college_id)).pack(pady=10)
+        update_college_window.mainloop()
+
+    def update_college_db(self, update_college_window, college_name, college_id):
+        conn = connect_db()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE colleges SET faculdade_name=? WHERE faculdade_id=?", (college_name.get(), college_id.get()))
+        conn.commit()
+        conn.close()
+        update_college_window.destroy()
+        FaculdadeControle()
+
     def quit_app(self):
         """Fecha a aplicação."""
         self.destroy()

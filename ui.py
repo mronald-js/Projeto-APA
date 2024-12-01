@@ -1,5 +1,6 @@
 import customtkinter as ctk
 import tkinter
+import sqlite3
 from banco.database import *
 import utility.center as center
 
