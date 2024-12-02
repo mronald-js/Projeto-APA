@@ -1,0 +1,72 @@
+def backtracking_timetabling(professores):
+    # Inicializar a matriz de 10 linhas x 5 colunas
+    matriz = [[None for _ in range(5)] for _ in range(10)]
+    
+    # Ordenar aulas por carga horária decrescente - Forma de otimização
+    aulas = sorted(
+        [(professor, i) for professor, carga in professores.items() for i in range(carga)],
+        key=lambda x: professores[x[0]],  # Ordenar pela carga horária do professor
+        reverse=True
+    )
+    
+    def pode_alocar(professor, linha, coluna):
+        # Verificar se o professor já está na mesma linha
+        if professor in matriz[linha]:
+            return False
+        return True
+
+    def resolver(index):
+        if index == len(aulas):
+            return True  # Todas as aulas foram alocadas
+        
+        professor, _ = aulas[index]
+        
+        for linha in range(10):  # 10 períodos (2 por dia, 5 dias)
+            for coluna in range(5):  # 5 salas
+                if matriz[linha][coluna] is None and pode_alocar(professor, linha, coluna):
+                    # Tentativa de alocação
+                    matriz[linha][coluna] = professor
+                    
+                    # Incrementa para a próxima aula
+                    if resolver(index + 1):
+                        return True
+                    
+                    # Desfazer a alocação por backtracking
+                    matriz[linha][coluna] = None
+        
+        return False
+
+    if resolver(0):
+        return matriz
+    else:
+        return None
+
+def imprimir_matriz(matriz):
+    dias_semana = ["2ª feira", "3ª feira", "4ª feira", "5ª feira", "6ª feira"]
+    periodos = ["Período 1", "Período 2"]
+    
+    print("Seguindo as especificações apresentadas e conforme carga horária para cada professor indicada.")
+    print()
+    
+    for dia_index in range(5): # 5 dias
+        print(f"{dias_semana[dia_index]}:")
+        
+        for periodo_index in range(2):  # 2 períodos por dia
+            linha = dia_index * 2 + periodo_index
+            print(f"  {periodos[periodo_index]}: ", end="")
+            print(" | ".join(str(prof) if prof is not None else "-" for prof in matriz[linha]))
+        print()
+
+# Dados iniciais
+professores = {
+    1: 1, 2: 1, 3: 2, 4: 2, 5: 4, 6: 1, 7: 4, 8: 2, 9: 1, 10: 1,
+    11: 2, 12: 2, 13: 2, 14: 2, 15: 4, 16: 2, 17: 4, 18: 5, 19: 4, 20: 4
+}
+
+# Executação do algoritmo de backtracking
+solucao = backtracking_timetabling(professores)
+
+if solucao:
+    imprimir_matriz(solucao)
+else:
+    print("Nenhuma solução válida foi encontrada.")
