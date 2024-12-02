@@ -16,7 +16,7 @@ A linguagem escolhida por nosso grupo foi o Python
 Cheque a documentação do projeto para detalhes
 https://docs.google.com/document/d/137XZ3vYYl3C3Dj1eXUrI3pwNVAhgr4Np7JKOYxJEXQ8/edit?tab=t.0
 
-#Autores
+# Autores  
 Abraao  
 Gabriel Mota  
 Matheus Augusto  
