@@ -1,4 +1,4 @@
-import random
+import random  # Importando a biblioteca random
 
 # Dados iniciais
 professores = {
@@ -14,8 +14,8 @@ dias_semana = ["2ª feira", "3ª feira", "4ª feira", "5ª feira", "6ª feira"] 
 alocacao_por_dia = {dia: {periodo: {sala: None for sala in salas} for periodo in periodos} for dia in dias_semana}
 professores_alocados = {professor: 0 for professor in professores}  # Contagem de aulas alocadas para cada professor
 
-# Função para alocar aulas de maneira mais equilibrada
-def alocar_aulas():
+# Função para alocar aulas de maneira gulosa
+def alocar_aulas_guloso():
     alocacao = {professor: [] for professor in professores.keys()}  # Alocação inicial vazia
 
     # Para cada professor, tentar alocar suas aulas
@@ -23,18 +23,17 @@ def alocar_aulas():
         aulas_restantes = carga_horaria  # O número de aulas que ainda precisa ministrar
 
         # Tentando alocar aulas até que o professor tenha completado sua carga horária
-        while aulas_restantes > 0:
-            # Tentativa de alocar aulas de forma equilibrada
-            dia = random.choice(dias_semana)  # Escolher um dia aleatório
-            periodo = random.choice(periodos)  # Escolher aleatoriamente Período 1 ou Período 2
-            sala = random.choice(salas)  # Escolher uma sala aleatória
-
-            # Verificar se a sala está livre e se o professor já não tem aula nesse dia e período
-            if alocacao_por_dia[dia][periodo][sala] is None:
-                alocacao[professor].append((f"Aula {random.randint(1, 100)}", periodo, sala))
-                alocacao_por_dia[dia][periodo][sala] = professor  # Marcar a sala como ocupada
-                professores_alocados[professor] += 1  # Incrementar a quantidade de aulas alocadas para o professor
-                aulas_restantes -= 1
+        for dia in dias_semana:
+            for periodo in periodos:
+                if aulas_restantes > 0:
+                    # Tentando alocar o professor na primeira sala disponível para aquele dia e período
+                    for sala in salas:
+                        if alocacao_por_dia[dia][periodo][sala] is None:
+                            alocacao[professor].append((f"Aula {random.randint(1, 100)}", periodo, sala))
+                            alocacao_por_dia[dia][periodo][sala] = professor  # Marcar a sala como ocupada
+                            professores_alocados[professor] += 1  # Incrementar a quantidade de aulas alocadas para o professor
+                            aulas_restantes -= 1  # Decrementa a carga horária restante
+                            break  # Passa para o próximo período ou dia
 
     return alocacao
 
@@ -60,6 +59,6 @@ def imprimir_grade():
             # Imprimindo a linha da tabela
             print(" | ".join(tabela))
 
-# Rodando o algoritmo
-alocacao = alocar_aulas()
+# Rodando o algoritmo guloso
+alocacao = alocar_aulas_guloso()
 imprimir_grade()
