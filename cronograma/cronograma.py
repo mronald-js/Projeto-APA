@@ -1,64 +1,96 @@
 import customtkinter as ctk
 import utility.center as center
-
+import algoritmos.TimeTabling_Modelo_Alg_Guloso_UI as alg_guloso
 
 class Cronograma(ctk.CTk):
 
     def __init__(self, user):
         super().__init__()
         self.geometry(center.CenterWindowToDisplay(self, 800, 600))
-        self.title("Visualizar Cronograma")
+        self.title("Visualizar Timetabling")
+        self.user = user
+
+        # Ajustar a estrutura de alocação
+        self.alocacao_ajustada = self.ajustar_alocacao()
+
         self.create_widgets()
         self.create_button_container()
-        self.user = user
+
+    def ajustar_alocacao(self):
+        """
+        Ajusta a estrutura de alocação do algoritmo para o formato esperado pela interface.
+        """
+        # Obtém a alocação diretamente no formato esperado: {dia: {período: {sala: professor}}}
+        try:
+            alocacao = alg_guloso.alocar_aulas_guloso()
+            return alocacao
+        except Exception as e:
+            print(f"Erro ao ajustar a alocação: {e}")
+            return None  # Retorna None em caso de erro
 
     def create_widgets(self):
         # Título Principal
-        ctk.CTkLabel(self, text="Primeiro Semestre 2024 Cronograma", font=("Arial Bold", 24)).pack(pady=20)
+        titulo = ctk.CTkLabel(self, text="2024 Timetabling", font=("Arial Bold", 24), anchor="center", text_color="#333333")
+        titulo.pack(pady=20)
 
         # Criação do frame container para a tabela
-        table_frame = ctk.CTkFrame(self)
+        table_frame = ctk.CTkFrame(self, corner_radius=10, fg_color="#F0F0F0")  # Cor de fundo clara para o frame
         table_frame.pack(pady=10, padx=20, fill="both", expand=True)
 
-        # Cabeçalhos da tabela
-        headers = ["SEG", "TER", "QUA", "QUI", "SEX"]
+        # Configuração de layout da tabela
+        table_frame.grid_columnconfigure(0, weight=1)
+        for i in range(len(alg_guloso.salas) + 1):
+            table_frame.grid_columnconfigure(i, weight=1)
+
+        # Cabeçalhos da tabela (em cor escura e fundo contrastante)
+        headers = ["Dia/Sala"] + alg_guloso.salas
         for col, header in enumerate(headers):
             ctk.CTkLabel(
-                master=table_frame, text=header, font=("Arial Bold", 16), anchor="center"
+                master=table_frame,
+                text=header,
+                font=("Arial Bold", 14),
+                fg_color="#1F1F1F",  # Cor escura para o fundo do cabeçalho
+                text_color="white",  # Cor clara para o texto
+                corner_radius=5,
+                padx=10,
+                pady=5,
+                anchor="center"
             ).grid(row=0, column=col, padx=5, pady=5, sticky="nsew")
 
-        # Conteúdo do cronograma
-        schedule = [
-            ["Introdução à Programação\nSilva\n08:00-10:00\nCOMP101", "", 
-            "Estruturas de Dados\nOliveira\n08:00-10:00\nCOMP201", "", 
-            "Engenharia de Software\nSantos\n09:00-11:30\nCOMP301"],
-            ["", "Banco de Dados\nPereira\n14:00-16:00\nCOMP302", 
-            "", "Redes de Computadores\nFernandes\n16:30-18:30\nCOMP401", 
-            "Banco de Dados\nPereira\n14:00-16:00\nCOMP302"],
-            ["", "Algoritmos e Complexidade\nCosta\n10:00-12:00\nCOMP202", 
-            "", "", ""],
-        ]
-
-        # Criando células da tabela
-        for row, day_schedule in enumerate(schedule, start=1):
-            for col, content in enumerate(day_schedule):
-                cell = ctk.CTkLabel(
+        # Exibir a grade horária
+        row_index = 1
+        for dia, alocacao_dia in self.alocacao_ajustada.items():
+            for periodo, alocacao_periodo in alocacao_dia.items():
+                # Exibe o dia e o período
+                ctk.CTkLabel(
                     master=table_frame,
-                    text=content,  # Texto de cada célula
-                    font=("Arial", 12),
-                    anchor="center",
-                    wraplength=150,  # Ajusta textos longos
-                    justify="center",  # Centraliza o texto
-                    fg_color="#DCE4EE" if content else None,  # Cor de fundo
-                    text_color="black"  # Cor do texto
-                )
-                cell.grid(row=row, column=col, padx=5, pady=5, sticky="nsew")
+                    text=f"{dia} - {periodo}",
+                    font=("Arial", 12, "bold"),
+                    fg_color="#E0E0E0",  # Fundo claro para os títulos das linhas
+                    text_color="#333333",  # Cor escura para o texto
+                    corner_radius=5,
+                    padx=10,
+                    pady=5,
+                    anchor="center"
+                ).grid(row=row_index, column=0, padx=5, pady=5, sticky="nsew")
 
-        # Ajuste das proporções das colunas e linhas
-        for col in range(len(headers)):
-            table_frame.columnconfigure(col, weight=1)
-        for row in range(len(schedule) + 1):  # Incluindo os cabeçalhos
-            table_frame.rowconfigure(row, weight=1)
+                # Preenche as salas com os professores alocados
+                for col_index, sala in enumerate(alg_guloso.salas, start=1):
+                    professor = alocacao_periodo.get(str(sala), None)  # Acesso correto
+                    texto = f"Prof. {professor}" if professor is not None else "-"
+                    ctk.CTkLabel(
+                        master=table_frame,
+                        text=texto,
+                        font=("Arial", 12),
+                        fg_color="#FFFFFF" if (row_index % 2 == 0) else "#F9F9F9",  # Linhas claras e escuras
+                        text_color="#333333",  # Cor escura para o texto
+                        corner_radius=5,
+                        padx=10,
+                        pady=5,
+                        anchor="center"
+                    ).grid(row=row_index, column=col_index, padx=5, pady=5, sticky="nsew")
+
+                row_index += 1
 
     def create_button_container(self):
         """Cria o container para botões de ação."""
@@ -66,11 +98,11 @@ class Cronograma(ctk.CTk):
         button_container.pack(pady=20, fill="y", expand=True)
 
         ctk.CTkButton(
-        master=button_container, text="Sair", command=self.quit_app
+            master=button_container, text="Sair", command=self.quit_app
         ).pack(pady=20, padx=10, side="left")
 
         ctk.CTkButton(
-        master=button_container, text="Voltar", command=lambda: self.retornar(user=self.user)
+            master=button_container, text="Voltar", command=lambda: self.retornar(user=self.user)
         ).pack(pady=20, padx=10, side="left")
 
     def quit_app(self):
@@ -79,9 +111,8 @@ class Cronograma(ctk.CTk):
 
     def retornar(self, user):
         """Retorna para a tela principal."""
-        # Evita import circular
         self.destroy()
-        if(user == 'admin'):
+        if user == 'admin':
             from admin.admin import AdminPanel
             app = AdminPanel()
             app.mainloop()

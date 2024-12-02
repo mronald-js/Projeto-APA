@@ -1,9 +1,7 @@
-
 import customtkinter as ctk
 import tkinter
 from banco.database import connect_db
 import utility.center as center
-
 
 
 class AdminPanel(ctk.CTk):
@@ -28,7 +26,7 @@ class AdminPanel(ctk.CTk):
         self.create_button_container()
 
     def create_modificar_frame(self, parent):
-        """Cria o frame de modificação."""
+        """Cria o frame de modificação para professores."""
         modificar_frame = ctk.CTkFrame(master=parent, width=200, height=200)
         modificar_frame.pack(side="left", padx=(80, 20), pady=20, fill="y")
 
@@ -36,16 +34,13 @@ class AdminPanel(ctk.CTk):
             master=modificar_frame, text="Modificar", fg_color="transparent"
         ).place(relx=0.5, rely=0.1, anchor=tkinter.CENTER)
 
+        # Botão para acessar o controle de professores
         ctk.CTkButton(
-            master=modificar_frame, text="Matéria", command=self.renderMaterias
+            master=modificar_frame, text="Professores", command=self.renderProfessores
         ).place(relx=0.5, rely=0.3, anchor=tkinter.CENTER)
 
-        ctk.CTkButton(
-            master=modificar_frame, text="Faculdades",  command=self.renderFaculdades
-        ).place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
-
     def create_timetable_frame(self, parent):
-        """Cria o frame do cronograma de aulas."""
+        """Cria o frame do cronograma de aulas (se necessário)."""
         timetable_frame = ctk.CTkFrame(master=parent, width=400, height=200)
         timetable_frame.pack(side="left", padx=40, pady=20, fill="y", expand=True)
 
@@ -53,10 +48,10 @@ class AdminPanel(ctk.CTk):
             master=timetable_frame, text="Cronograma de Aulas", fg_color="transparent"
         ).place(relx=0.5, rely=0.1, anchor=tkinter.CENTER)
 
+        # Botão para acessar o cronograma de aulas (manter se for necessário)
         ctk.CTkButton(
             master=timetable_frame, text="Cronograma de Aulas", command=self.renderCronograma
         ).place(relx=0.5, rely=0.3, anchor=tkinter.CENTER)
-
 
     def create_button_container(self):
         """Cria o container para botões de ação."""
@@ -81,25 +76,15 @@ class AdminPanel(ctk.CTk):
         cronograma = cronograma.Cronograma(user='admin')
         cronograma.mainloop()
     
-    def renderMaterias(self):
+    def renderProfessores(self):
         # Evita import circular
         import os
         import sys
         sys.path.insert(1, os.getcwd())
         self.destroy()
-        from admin import materiasControl
-        materiais = materiasControl.materiasControle()
-        materiais.mainloop()
-    
-    def renderFaculdades(self):
-        # Evita import circular
-        import os
-        import sys
-        sys.path.insert(1, os.getcwd())
-        self.destroy()
-        from admin import faculdadeControl
-        faculdade = faculdadeControl.FaculdadeControle()
-        faculdade.mainloop()
+        from admin import professoresControl
+        professores_control = professoresControl.ProfessoresControle()  # Classe de controle de professores
+        professores_control.mainloop()
 
     def quit_app(self):
         """Fecha a aplicação."""
