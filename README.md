@@ -1,6 +1,7 @@
 # Projeto Da disciplina De análise e projetos de algoritmos na Universidade Federal de Goiás
 O projeto Visa implementar algumas soluções que sejam satisfatórias para a resoluções de problemas de timetable  
-no contexto do nosso projeto definimos como escopo o contexto universitário, foram usados poucos critérios a fim de facilitar na comparação e construção dos algoritmos  
+no contexto do nosso projeto definimos como escopo o contexto universitário  
+foram usados poucos critérios a fim de facilitar na comparação e construção dos algoritmos  
 mais detalhes podem ser vistos consultando a documentação
 
 A linguagem escolhida por nosso grupo foi o Python
